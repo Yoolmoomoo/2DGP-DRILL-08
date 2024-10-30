@@ -134,9 +134,9 @@ class AutoRun:
   @staticmethod
   def exit(boy, e):
     if boy.face_dir == 1:
-      boy.action = 2
-    if boy.face_dir == -1:
       boy.action = 3
+    if boy.face_dir == -1:
+      boy.action = 2
     pass
   @staticmethod
   def do(boy):
@@ -144,9 +144,11 @@ class AutoRun:
       boy.state_machine.add_event(('TIME_OUT', 0))
     if boy.x > 780:
       boy.dir = -1
+      boy.face_dir = -1
       boy.action = 0
     if boy.x < 10:
       boy.dir = 1
+      boy.face_dir = 1
       boy.action = 1
     boy.x += boy.dir * boy.speed * 2
     boy.frame = (boy.frame + 1) % 8
