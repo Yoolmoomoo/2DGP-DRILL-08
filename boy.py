@@ -16,7 +16,7 @@ class Boy:
         Idle : { right_down : Run, left_down : Run, left_up : Run, right_up : Run, time_out : Sleep, a_down : AutoRun }, # key는 cur_state : val은 다시 Dictionary
         Run : {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, a_down : AutoRun}, # Run 상태에서 어떤 이벤트가 들어와도 처리하지 않겠다
         Sleep : { right_down: Run, left_down: Run, right_up: Run, left_up: Run, space_down : Idle, a_down : AutoRun },
-        AutoRun : {time_out : Idle}
+        AutoRun : {right_down: Run, left_down: Run, time_out : Idle}
       }
     )
 
@@ -95,7 +95,7 @@ class Run:
   @staticmethod
   def enter(boy, e):
     if right_down(e) or left_up(e):
-      boy.dir = 1 # 오른쪽 방ㅎ량
+      boy.dir = 1 # 오른쪽 방향
       boy.face_dir = 1
       boy.action = 1
     elif left_down(e) or right_up(e):
@@ -109,6 +109,12 @@ class Run:
     pass
   @staticmethod
   def do(boy):
+    if boy.x > 780:
+      boy.x = 780
+      return
+    if boy.x < 10:
+      boy.x = 10
+      return
     boy.x += boy.dir*boy.speed
     boy.frame = (boy.frame + 1) % 8
     pass
