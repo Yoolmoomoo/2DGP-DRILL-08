@@ -7,6 +7,7 @@ class Boy:
     self.frame = 0
     self.action = 3
     self.speed = 5
+    self.dir = 1
     self.image = load_image('animation_sheet.png')
     self.state_machine = StateMachine(self) # Boy 인스턴스들은 각자의 state_machine을 갖는다
     self.state_machine.start(Idle) # 파이썬에서는 클래스 이름을 파라미터로 넘겨줄 수 있다.
@@ -95,9 +96,11 @@ class Run:
   def enter(boy, e):
     if right_down(e) or left_up(e):
       boy.dir = 1 # 오른쪽 방ㅎ량
+      boy.face_dir = 1
       boy.action = 1
     elif left_down(e) or right_up(e):
       boy.dir = -1
+      boy.face_dir = -1
       boy.action = 0
     boy.frame = 0
     pass
@@ -121,23 +124,32 @@ class AutoRun:
   @staticmethod
   def enter(boy, e):
     boy.start_time = get_time()
+    if boy.face_dir == 1:
+      boy.action = 1
+      boy.dir = 1
+    if boy.face_dir == -1:
+      boy.action = 0
+      boy.dir = -1
     pass
   @staticmethod
   def exit(boy, e):
+    if boy.face_dir == 1:
+      boy.action = 2
+    if boy.face_dir == -1:
+      boy.action = 3
     pass
   @staticmethod
   def do(boy):
     if get_time() - boy.start_time > 5:
       boy.state_machine.add_event(('TIME_OUT', 0))
-    boy.frame = (boy.frame + 1) % 8
     if boy.x > 780:
       boy.dir = -1
       boy.action = 0
     if boy.x < 10:
       boy.dir = 1
       boy.action = 1
-    boy.x += boy.dir*boy.speed
-
+    boy.x += boy.dir * boy.speed * 2
+    boy.frame = (boy.frame + 1) % 8
     pass
   @staticmethod
   def draw(boy):
