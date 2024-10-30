@@ -6,6 +6,7 @@ class Boy:
     self.x, self.y = 400, 90
     self.frame = 0
     self.action = 3
+    self.speed = 5
     self.image = load_image('animation_sheet.png')
     self.state_machine = StateMachine(self) # Boy 인스턴스들은 각자의 state_machine을 갖는다
     self.state_machine.start(Idle) # 파이썬에서는 클래스 이름을 파라미터로 넘겨줄 수 있다.
@@ -104,7 +105,7 @@ class Run:
     pass
   @staticmethod
   def do(boy):
-    boy.x += boy.dir*5
+    boy.x += boy.dir*boy.speed
     boy.frame = (boy.frame + 1) % 8
     pass
   @staticmethod
