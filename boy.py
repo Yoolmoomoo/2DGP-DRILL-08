@@ -1,5 +1,5 @@
 from pico2d import load_image, get_time
-from state_machine import StateMachine, time_out, space_down, right_down, left_down, left_up, right_up, start_event
+from state_machine import StateMachine, time_out, space_down, right_down, left_down, left_up, right_up, start_event, a_down
 
 class Boy:
   def __init__(self):
@@ -7,14 +7,16 @@ class Boy:
     self.frame = 0
     self.action = 3
     self.speed = 5
+    self.size = 100
     self.image = load_image('animation_sheet.png')
     self.state_machine = StateMachine(self) # Boy 인스턴스들은 각자의 state_machine을 갖는다
     self.state_machine.start(Idle) # 파이썬에서는 클래스 이름을 파라미터로 넘겨줄 수 있다.
     self.state_machine.set_transitions(
       {
-        Idle : { right_down : Run, left_down : Run, left_up : Run, right_up : Run, time_out : Sleep }, # key는 cur_state : val은 다시 Dictionary
-        Run : {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle}, # Run 상태에서 어떤 이벤트가 들어와도 처리하지 않겠다
-        Sleep : { right_down: Run, left_down: Run, right_up: Run, left_up: Run, space_down : Idle }
+        Idle : { right_down : Run, left_down : Run, left_up : Run, right_up : Run, time_out : Sleep, a_down : AutoRun }, # key는 cur_state : val은 다시 Dictionary
+        Run : {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, a_down : AutoRun}, # Run 상태에서 어떤 이벤트가 들어와도 처리하지 않겠다
+        Sleep : { right_down: Run, left_down: Run, right_up: Run, left_up: Run, space_down : Idle, a_down : AutoRun },
+        AutoRun : {time_out : Idle}
       }
     )
 
@@ -119,12 +121,16 @@ class Run:
 class AutoRun:
   @staticmethod
   def enter(boy, e):
+    boy.start_time = get_time()
     pass
   @staticmethod
   def exit(boy, e):
     pass
   @staticmethod
   def do(boy):
+    if get_time() - boy.start_time > 5:
+      boy.state_machine.add_event(('TIME_OUT', 0))
+
     pass
   @staticmethod
   def draw(boy):
